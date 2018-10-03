@@ -14,7 +14,7 @@ typedef struct
 
 DOTDATA dotstr;
 struct timespec requestStart, requestEnd;
-double tiempo;
+double tiempo3 = 0;
 
 void dotprodOpenMP()
 {
@@ -40,11 +40,17 @@ to the appropriate variable in the structure.
     {
       mysum += (x[i] * y[i]);
     }
-
-  #pragma omp critical //defino la seccion critica al momento de sumar a la variable global
-   dotstr.sum += mysum;
-   //printf ("Sum of thread %d =  %f \n", omp_get_thread_num(),dotstr.sum);
    clock_gettime(CLOCK_REALTIME, &requestEnd);
+
+   double temp = ( requestEnd.tv_sec - requestStart.tv_sec )
+                     + ( requestEnd.tv_nsec - requestStart.tv_nsec )
+                       / BILLION;
+  #pragma omp critical //defino la seccion critica al momento de sumar a la variable global
+  {
+    if(tiempo3 < temp) tiempo3 = temp; //Tomamos el tiempo3 del hilo con mayor duración
+    dotstr.sum += mysum;
+  }
+   //printf ("Sum of thread %d =  %f \n", omp_get_thread_num(),dotstr.sum);
 
 }
 
@@ -74,13 +80,11 @@ double dotprod_openmp_clock(int num_hilos, int dimension_arreglo) {
 
   //Imprimo la suma final
   //printf ("Sum =  %f \n", dotstr.sum);
-  tiempo = ( requestEnd.tv_sec - requestStart.tv_sec )
-                   + ( requestEnd.tv_nsec - requestStart.tv_nsec )
-                     / BILLION;
-  //printf( "%lf\n", tiempo );
+
+  //printf( "%lf\n", tiempo3 );
   free (a);
   free (b);
 
-  return tiempo;
+  return tiempo3;
 
 }

@@ -31,7 +31,7 @@ typedef struct
  } DOTDATA;
 
 struct timespec requestStart, requestEnd;
-double tiempo;
+double tiempo2 = 0;
 /* Define globally accessible variables and a mutex */
 
    DOTDATA dotstr;
@@ -74,16 +74,22 @@ to the appropriate variable in the structure.
     {
       mysum += (x[i] * y[i]);
     }
-
+  clock_gettime(CLOCK_REALTIME, &requestEnd);
+  //Tiempo temporal
+  double temp = ( requestEnd.tv_sec - requestStart.tv_sec )
+                 + ( requestEnd.tv_nsec - requestStart.tv_nsec )
+                   / BILLION;
 /*
 Lock a mutex prior to updating the value in the shared
 structure, and unlock it upon updating.
 */
    pthread_mutex_lock (&mutexsum);
+   if(tiempo2 < temp) tiempo2 = temp; //Tomamos el tiempo del hilo con mayor duración
+   //printf("%lf\n", tiempo2);
+   //printf("%lf\n", temp);
    dotstr.sum += mysum;
    //printf("Thread %ld did %d to %d:  mysum=%f global sum=%f\n",offset,start,end,mysum,dotstr.sum);
    pthread_mutex_unlock (&mutexsum);
-   clock_gettime(CLOCK_REALTIME, &requestEnd);
    pthread_exit((void*) 0);
 
 }
@@ -147,15 +153,13 @@ for(i=0;i<num_hilos;i++) {
 /* After joining, print out the results and cleanup */
 //Hasta Aquí
 //printf ("Sum =  %f \n", dotstr.sum);
-tiempo = ( requestEnd.tv_sec - requestStart.tv_sec )
-                   + ( requestEnd.tv_nsec - requestStart.tv_nsec )
-                     / BILLION;
-//printf( "%lf\n", tiempo );
+//printf( "%lf\n", tiempo2 );
 
 free (a);
 free (b);
 pthread_mutex_destroy(&mutexsum);
-return tiempo;
+return tiempo2; // Se podria evitar el problema de hilos sueltos
+                //empleado un puntero.
 pthread_exit(NULL);
 
 }
