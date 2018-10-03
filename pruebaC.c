@@ -7,6 +7,8 @@
 #include <time.h>
 #include "funciones.h"
 #define EJECUCIONES 10
+#define NODOS 4
+#define LEN 100000
 
 int main(int argc, char const *argv[]) {
   //-------------------------------
@@ -14,30 +16,30 @@ int main(int argc, char const *argv[]) {
   double tiempo_acu;
 
   for(int i=0; i<EJECUCIONES; i++){
-     tiempo_acu = tiempo_acu + dot_serial_clock(100000);
+     tiempo_acu = tiempo_acu + dot_serial_clock(LEN);
   }
 
-  printf("Tiempo promedio Serial 10 ejecuciones: %f\n",tiempo_acu/(double)10);
+  printf("Tiempo promedio Serial 10 ejecuciones: %f\n",tiempo_acu/(double)EJECUCIONES);
 
   //-------------------------------
   //Tiempo pthread
   double tiempo_acu2;
 
   for(int i=0; i<EJECUCIONES; i++){
-     tiempo_acu2 = tiempo_acu2 + dot_mutex_clock(4,100000);
+     tiempo_acu2 = tiempo_acu2 + dot_mutex_clock(NODOS,LEN);
   }
 
-  printf("Tiempo promedio Pthread 10 ejecuciones: %f\n",tiempo_acu2/(double)10);
+  printf("Tiempo promedio Pthread 10 ejecuciones: %f\n",tiempo_acu2/(double)EJECUCIONES);
 
   //------------------------------
   //Tiempo openmp
   double tiempo_acu3;
 
   for(int i=0; i<EJECUCIONES; i++){
-     tiempo_acu3 = tiempo_acu3 + dotprod_openmp_clock(4,100000);
+     tiempo_acu3 = tiempo_acu3 + dotprod_openmp_clock(NODOS,LEN);
   }
 
-  printf("Tiempo promedio OpenMP 10 ejecuciones: %f\n",tiempo_acu3/(double)10);
+  printf("Tiempo promedio OpenMP 10 ejecuciones: %f\n",tiempo_acu3/(double)EJECUCIONES);
 
   return 0;
 }
