@@ -1,2 +1,2 @@
 # Report_2_Op_Sis
-Oscar me la pela, pero debo de hacer con él mi deber de sistemas operativos
+gcc -o pruebaC pruebaC.c funciones.h dot_serial_clock.c dot_mutex_clock.c dotprod_openmp.c -pthread -fopenmp

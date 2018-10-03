@@ -11,13 +11,12 @@ typedef struct
    int     veclen;
  } DOTDATA;
 
-#define NUMTHRDS 8
-#define VECLEN 10000000
+
 DOTDATA dotstr;
 struct timespec requestStart, requestEnd;
-double accum;
+double tiempo;
 
-void dotprod()
+void dotprodOpenMP()
 {
 
 /* Define and use local variables for convenience */
@@ -44,44 +43,44 @@ to the appropriate variable in the structure.
 
   #pragma omp critical //defino la seccion critica al momento de sumar a la variable global
    dotstr.sum += mysum;
-   printf ("Sum of thread %d =  %f \n", omp_get_thread_num(),dotstr.sum);
+   //printf ("Sum of thread %d =  %f \n", omp_get_thread_num(),dotstr.sum);
    clock_gettime(CLOCK_REALTIME, &requestEnd);
 
 }
 
-int main(int argc, char const *argv[]) {
+double dotprod_openmp_clock(int num_hilos, int dimension_arreglo) {
   double *a, *b;
-  a = (double*) malloc (NUMTHRDS*VECLEN*sizeof(double));
-  b = (double*) malloc (NUMTHRDS*VECLEN*sizeof(double));
+  a = (double*) malloc (dimension_arreglo*sizeof(double));
+  b = (double*) malloc (dimension_arreglo*sizeof(double));
 
   //Inicializo los valores de los vectores todos a uno
-  for (int i=0; i<VECLEN*NUMTHRDS; i++) {
+  for (int i=0; i<dimension_arreglo; i++) {
     a[i]=1;
     b[i]=a[i];
   }
 
   //defino los valores de la estructura global dotstr
-  dotstr.veclen = VECLEN;
+  dotstr.veclen = dimension_arreglo/num_hilos;
   dotstr.a = a;
   dotstr.b = b;
   dotstr.sum=0;
 
-  #pragma omp parallel num_threads(NUMTHRDS)
+  #pragma omp parallel num_threads(num_hilos)
   {
     //Ejecuto la funcion dotprod() en cada hilo
-    dotprod();
-    printf("Prueba de hilo %d de %d\n",omp_get_thread_num(),omp_get_num_threads());
+    dotprodOpenMP();
+    //printf("Prueba de hilo %d de %d\n",omp_get_thread_num(),omp_get_num_threads());
   }
 
   //Imprimo la suma final
-  printf ("Sum =  %f \n", dotstr.sum);
-  double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
+  //printf ("Sum =  %f \n", dotstr.sum);
+  tiempo = ( requestEnd.tv_sec - requestStart.tv_sec )
                    + ( requestEnd.tv_nsec - requestStart.tv_nsec )
                      / BILLION;
-  printf( "%lf\n", accum );
+  //printf( "%lf\n", tiempo );
   free (a);
   free (b);
 
-  return 0;
+  return tiempo;
 
 }
