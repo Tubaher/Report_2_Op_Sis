@@ -25,6 +25,7 @@ double calDesviacion(double media,double* tiempos){
 int main(int argc, char const *argv[]) {
   //-------------------------------
   //Tiempo serial
+  printf("  \tMedia\t Desviacion Estandar\n");
   double tiempo_acu,desv_tipica, tiempo_paso, media, desviacion;
   double tiempos[EJECUCIONES];
 
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[]) {
   media = tiempo_acu/(double)EJECUCIONES;
   desviacion = calDesviacion(media,tiempos);
   //printf("Tiempo promedio Serial 10 ejecuciones: %f\n",tiempo_acu/(double)EJECUCIONES);
-  printf("%f %f\n",media,desviacion);
+  printf("Serial:  %f\t%f\n",media,desviacion);
 
   //-------------------------------
   //Tiempo pthread
@@ -53,7 +54,7 @@ int main(int argc, char const *argv[]) {
   media2 = tiempo_acu2/(double)EJECUCIONES;
   desviacion2 = calDesviacion(media2,tiempos2);
   //printf("Tiempo promedio Pthread 10 ejecuciones: %f\n",tiempo_acu2/(double)EJECUCIONES);
-  printf("%f %f\n",media2,desviacion2);
+  printf("Pthread: %f\t%f\n",media2,desviacion2);
 
   //------------------------------
   //Tiempo openmp
@@ -68,7 +69,7 @@ int main(int argc, char const *argv[]) {
   media3 = tiempo_acu3/(double)EJECUCIONES;
   desviacion3 = calDesviacion(media3,tiempos3);
   //printf("Tiempo promedio OpenMP 10 ejecuciones: %f\n",tiempo_acu3/(double)EJECUCIONES);
-  printf("%f %f\n",media3,desviacion3);
+  printf("OpenMP:  %f\t%f\n",media3,desviacion3);
 
   return 0;
 }
